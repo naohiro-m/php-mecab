@@ -41,12 +41,12 @@ extern "C" {
 
 #include <php.h>
 
-#include <php_ini.h>
 #include <SAPI.h>
-#include <ext/standard/info.h>
-#include <Zend/zend_extensions.h>
 #include <Zend/zend_exceptions.h>
+#include <Zend/zend_extensions.h>
 #include <Zend/zend_interfaces.h>
+#include <ext/standard/info.h>
+#include <php_ini.h>
 
 #ifdef __cplusplus
 } /* extern "C" */
@@ -71,14 +71,18 @@ extern "C" {
 #define PHP_MECAB_VERSION_STRING "unknown"
 #endif
 
+#if PHP_VERSION_ID >= 80000
+#define FREE_RESOURCE(resource) zend_list_delete(Z_RES_P(resource))
+#else
 #define FREE_RESOURCE(resource) zend_list_delete(Z_RESVAL_P(resource))
+#endif
 
 /* {{{ module globals */
 
 ZEND_BEGIN_MODULE_GLOBALS(mecab)
-	char *default_rcfile;
-	char *default_dicdir;
-	char *default_userdic;
+char *default_rcfile;
+char *default_dicdir;
+char *default_userdic;
 ZEND_END_MODULE_GLOBALS(mecab)
 
 #ifdef ZTS
@@ -99,60 +103,55 @@ typedef struct _php_mecab_node php_mecab_node;
 typedef struct _php_mecab_path php_mecab_path;
 
 enum _php_mecab_node_attribute {
-	ATTR_ALL,
-	ATTR_SURFACE,
-	ATTR_FEATURE,
-	ATTR_ID,
-	ATTR_LENGTH,
-	ATTR_RLENGTH,
-	ATTR_RCATTR,
-	ATTR_LCATTR,
-	ATTR_POSID,
-	ATTR_CHAR_TYPE,
-	ATTR_STAT,
-	ATTR_ISBEST,
-	ATTR_ALPHA,
-	ATTR_BETA,
-	ATTR_PROB,
-	ATTR_WCOST,
-	ATTR_COST
+  ATTR_ALL,
+  ATTR_SURFACE,
+  ATTR_FEATURE,
+  ATTR_ID,
+  ATTR_LENGTH,
+  ATTR_RLENGTH,
+  ATTR_RCATTR,
+  ATTR_LCATTR,
+  ATTR_POSID,
+  ATTR_CHAR_TYPE,
+  ATTR_STAT,
+  ATTR_ISBEST,
+  ATTR_ALPHA,
+  ATTR_BETA,
+  ATTR_PROB,
+  ATTR_WCOST,
+  ATTR_COST
 };
 
 enum _php_mecab_node_rel {
-	NODE_PREV,
-	NODE_NEXT,
-	NODE_ENEXT,
-	NODE_BNEXT,
-	NODE_RPATH,
-	NODE_LPATH
+  NODE_PREV,
+  NODE_NEXT,
+  NODE_ENEXT,
+  NODE_BNEXT,
+  NODE_RPATH,
+  NODE_LPATH
 };
 
-enum _php_mecab_path_rel {
-	PATH_RNODE,
-	PATH_RNEXT,
-	PATH_LNODE,
-	PATH_LNEXT
-};
+enum _php_mecab_path_rel { PATH_RNODE, PATH_RNEXT, PATH_LNODE, PATH_LNEXT };
 
 struct _php_mecab {
-	mecab_t *ptr;
+  mecab_t *ptr;
 #if PHP_VERSION_ID >= 70000
-	zend_string *str;
+  zend_string *str;
 #else
-	char *str;
-	int len;
+  char *str;
+  int len;
 #endif
-	int ref;
+  int ref;
 };
 
 struct _php_mecab_node {
-	php_mecab *tagger;
-	const mecab_node_t *ptr;
+  php_mecab *tagger;
+  const mecab_node_t *ptr;
 };
 
 struct _php_mecab_path {
-	php_mecab *tagger;
-	const mecab_path_t *ptr;
+  php_mecab *tagger;
+  const mecab_path_t *ptr;
 };
 
 typedef enum _php_mecab_traverse_mode php_mecab_traverse_mode;
@@ -160,27 +159,23 @@ typedef struct _php_mecab_object php_mecab_object;
 typedef struct _php_mecab_node_object php_mecab_node_object;
 typedef struct _php_mecab_path_object php_mecab_path_object;
 
-enum _php_mecab_traverse_mode {
-	TRAVERSE_NEXT,
-	TRAVERSE_ENEXT,
-	TRAVERSE_BNEXT
-};
+enum _php_mecab_traverse_mode { TRAVERSE_NEXT, TRAVERSE_ENEXT, TRAVERSE_BNEXT };
 
 struct _php_mecab_object {
-	zend_object std;
-	php_mecab *ptr;
+  php_mecab *ptr;
+  zend_object std;
 };
 
 struct _php_mecab_node_object {
-	zend_object std;
-	php_mecab_node *ptr;
-	const mecab_node_t *root;
-	php_mecab_traverse_mode mode;
+  php_mecab_node *ptr;
+  const mecab_node_t *root;
+  php_mecab_traverse_mode mode;
+  zend_object std;
 };
 
 struct _php_mecab_path_object {
-	zend_object std;
-	php_mecab_path *ptr;
+  php_mecab_path *ptr;
+  zend_object std;
 };
 
 /* }}} */
@@ -190,7 +185,6 @@ struct _php_mecab_path_object {
 #endif
 
 #endif /* PHP_MECAB_H */
-
 
 /*
  * Local variables:
